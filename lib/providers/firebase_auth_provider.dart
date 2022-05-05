@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connect/models/user_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -28,6 +29,7 @@ class AuthProvider with ChangeNotifier {
     if (user == null) {
       return UserModel(uid: 'null', displayName: 'Null');
     }
+
     return UserModel(
         uid: user.uid,
         displayName: user.displayName,
@@ -39,15 +41,27 @@ class AuthProvider with ChangeNotifier {
     try {
       _status = Status.authenticating;
       notifyListeners();
-      print('signing in');
       await _auth.signInWithEmailAndPassword(email: email, password: password);
-      print('signed in');
       return true;
     } catch (e) {
-      print('sign in failed');
       notifyListeners();
       _status = Status.unauthenticated;
       return false;
+    }
+  }
+
+  Future<UserModel> registerWithEmailAndPassword(
+      String email, String password) async {
+    try {
+      _status = Status.registering;
+      notifyListeners();
+      final UserCredential result = await _auth.createUserWithEmailAndPassword(
+          email: email, password: password);
+      return _fromFirebaseUser(result.user);
+    } catch (e) {
+      _status = Status.unauthenticated;
+      notifyListeners();
+      return UserModel(displayName: 'Null', uid: 'null');
     }
   }
 
@@ -59,6 +73,11 @@ class AuthProvider with ChangeNotifier {
       _status = Status.unauthenticated;
     }
     notifyListeners();
+  }
+
+  Future<void> sendPasswordResetEmail(String email) async {
+    //Need to finish code on firebase
+    await _auth.sendPasswordResetEmail(email: email);
   }
 
   Future signOut() async {
