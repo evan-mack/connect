@@ -3,7 +3,7 @@ import 'package:connect/models/user_model.dart';
 import 'package:connect/providers/firebase_auth_provider.dart';
 import 'package:connect/routes.dart';
 import 'package:connect/services/firestore_database.dart';
-import 'package:connect/ui/components/app_bar.dart';
+import 'package:connect/ui/components/app_bar/app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
